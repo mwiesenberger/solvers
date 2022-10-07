@@ -185,8 +185,9 @@ int main( int argc, char* argv[])
 
     if( argc == 3)
     {
-        std::fstream outf( argv[2]);
+        std::ofstream outf( argv[2]);
         outf << sout.str();
+        outf.close();
     }
     else
         std::cout << sout.str();
