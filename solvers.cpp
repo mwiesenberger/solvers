@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <sstream>
 #include <functional>
 
 #include "dg/algorithm.h"
@@ -66,8 +67,8 @@ std::function<void(const dg::DVec&, dg::DVec&)> create_solver(
     }
     else if( solver == "LGMRES")
     {
-        unsigned inner_m = js["solver"]["inner_m"].asUInt(), outer_k = js["solver"]["outer_k"].asUInt();
-        unsigned max_iter = js["solver"]["max_iter"].asUInt();
+        unsigned inner_m = js["inner_m"].asUInt(), outer_k = js["outer_k"].asUInt();
+        unsigned max_iter = js["max_iter"].asUInt();
         dg::LGMRES<dg::DVec> lgmres( w2d, inner_m, outer_k, max_iter/inner_m);
         return [&, lgmres, precond, w2d, eps] ( const auto& y, auto& x) mutable
         {
@@ -76,8 +77,8 @@ std::function<void(const dg::DVec&, dg::DVec&)> create_solver(
     }
     else if( solver == "BICGSTABl")
     {
-        unsigned l_input = js["solver"]["l_input"].asUInt();
-        unsigned max_iter = js["solver"]["max_iter"].asUInt();
+        unsigned l_input = js["l_input"].asUInt();
+        unsigned max_iter = js["max_iter"].asUInt();
         dg::BICGSTABl<dg::DVec> bicg( w2d, max_iter, l_input);
         return [&, bicg, precond, w2d, eps] ( const auto& y, auto& x) mutable
         {
@@ -92,7 +93,7 @@ std::function<void(const dg::DVec&, dg::DVec&)> create_solver(
 int main( int argc, char* argv[])
 {
     dg::file::WrappedJsonValue js( dg::file::error::is_throw);
-    std::string input = argc==1 ? "flux.json" : argv[1];
+    std::string input = argc==1 ? "input.json" : argv[1];
     dg::file::file2Json( input, js.asJson(), dg::file::comments::are_discarded);
 
     unsigned  n = js["grid"] ["n"].asUInt(), Nx = js["grid"]["Nx"].asUInt(),
@@ -102,6 +103,7 @@ int main( int argc, char* argv[])
 
     std::cout << "# Computation on: "<< n <<" x "<< Nx <<" x "<< Ny << std::endl;
     //std::cout << "# of 2d cells                 "<< Nx*Ny <<std::endl;
+    std::stringstream sout;
 
 	dg::CartesianGrid2d grid( 0, lx, 0, ly, n, Nx, Ny, bcx, bcy);
     dg::DVec w2d = dg::create::weights( grid);
@@ -136,8 +138,8 @@ int main( int argc, char* argv[])
         t.tic();
         dg::apply( inverse_elliptic, b, x);
         t.toc();
-        std::cout << "time: "<<t.diff()<<"\n";
-        std::cout << "iter: "<<number<<"\n";
+        sout << "time: "<<t.diff()<<"\n";
+        sout << "iter: "<<number<<"\n";
     }
 
     else if( solver == "Multigrid-FAS")
@@ -156,30 +158,38 @@ int main( int argc, char* argv[])
         {
             multi_pol[u].construct( nested.grid(u), dir, jfactor);
             multi_pol[u].set_chi( multi_chi[u]);
-            multi_inv_pol[u] = [=, inverse = create_solver( js["solver"]["solvers"][u], nested.grid(u),
+            multi_inv_pol[u] = [=, &sout, inverse = create_solver( js["solver"]["solvers"][u], nested.grid(u),
                 numbers[u], multi_pol[u])] (const auto& y, auto& x) mutable
             {
                 dg::Timer t;
                 t.tic();
                 dg::apply( inverse, y, x);
                 t.toc();
-                std::cout << "stage: "<<u<<"\n";
-                std::cout << "    time: "<<t.diff()<<"\n";
-                std::cout << "    iter: "<<numbers[u]<<"\n";
+                sout << "stage: "<<u<<"\n";
+                sout << "    time: "<<t.diff()<<"\n";
+                sout << "    iter: "<<numbers[u]<<"\n";
             };
         }
         t.tic();
         dg::nested_iterations( multi_pol, x, b, multi_inv_pol, nested);
         t.toc();
-        std::cout <<"time "<<t.diff()<<"\n";
+        sout <<"time "<<t.diff()<<"\n";
     }
     //compute the error (solution contains analytic solution
     dg::blas1::axpby( 1.,x,-1., solution, error);
 
     //compute the L2 norm of the error
     double err = dg::blas2::dot( w2d, error);
-    std::cout << "error: "<<sqrt(err/norm)<<"\n";
-    std::cout << "error_abs: "<<sqrt(err)<<"\n";
+    sout << "error: "<<sqrt(err/norm)<<"\n";
+    sout << "error_abs: "<<sqrt(err)<<"\n";
+
+    if( argc == 3)
+    {
+        std::fstream outf( argv[2]);
+        outf << sout.str();
+    }
+    else
+        std::cout << sout.str();
 
     return 0;
 }
