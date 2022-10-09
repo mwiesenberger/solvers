@@ -131,7 +131,7 @@ int main( int argc, char* argv[])
     std::string solver = js["solver"]["type"].asString();
     dg::Timer t;
     x = temp;
-    if( solver != "Multigrid")
+    if( !(solver.find("Multigrid") != std::string::npos))
     {
         unsigned number = 0;
         auto inverse_elliptic = create_solver( js["solver"], grid, number, elliptic);
@@ -141,7 +141,6 @@ int main( int argc, char* argv[])
         sout << "time: "<<t.diff()<<"\n";
         sout << "iter: "<<number<<"\n";
     }
-
     else if( solver == "Multigrid-FAS")
     {
         unsigned num_stages = js["solver"]["num_stages"].asUInt();
@@ -158,22 +157,25 @@ int main( int argc, char* argv[])
         {
             multi_pol[u].construct( nested.grid(u), dir, jfactor);
             multi_pol[u].set_chi( multi_chi[u]);
-            multi_inv_pol[u] = [=, &sout, inverse = create_solver( js["solver"]["solvers"][u], nested.grid(u),
+            multi_inv_pol[u] = [=, &sout, &numbers,
+                inverse = create_solver( js["solver"]["solvers"][u], nested.grid(u),
                 numbers[u], multi_pol[u])] (const auto& y, auto& x) mutable
             {
                 dg::Timer t;
                 t.tic();
                 dg::apply( inverse, y, x);
                 t.toc();
-                sout << "stage: "<<u<<"\n";
+                sout << "-   stage: "<<u<<"\n";
                 sout << "    time: "<<t.diff()<<"\n";
                 sout << "    iter: "<<numbers[u]<<"\n";
             };
         }
+        sout << "stages: \n";
         t.tic();
         dg::nested_iterations( multi_pol, x, b, multi_inv_pol, nested);
         t.toc();
-        sout <<"time "<<t.diff()<<"\n";
+        sout <<"time: "<<t.diff()<<"\n";
+        sout <<"iter: "<<numbers[0]<<"\n";
     }
     //compute the error (solution contains analytic solution
     dg::blas1::axpby( 1.,x,-1., solution, error);
