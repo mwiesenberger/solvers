@@ -1,0 +1,1555 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Matrix free solvers &#8212; Matrix-free solvers</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="_static/logo.jpg" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">Matrix-free solvers</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1 current active">
+                <a class="reference internal" href="#">
+                    Matrix free solvers
+                </a>
+            </li>
+        </ul>
+        
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<div class="menu-dropdown menu-dropdown-launch-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Launch interactive content">
+      <i class="fas fa-rocket"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://mybinder.org/v2/gh/mwiesenberger/solvers/main?urlpath=tree/docs/matrix-free.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Launch on Binder"
+>
+  
+
+<span class="headerbtn__icon-container">
+  
+    <img src="_static/images/logo_binder.svg">
+  </span>
+<span class="headerbtn__text-container">Binder</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/mwiesenberger/solvers"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/mwiesenberger/solvers/issues/new?title=Issue%20on%20page%20%2Fmatrix-free.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="_sources/matrix-free.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.ipynb</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Matrix free solvers
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#elliptic-equation">
+     Elliptic equation
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#discretization">
+     Discretization
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#problem">
+     Problem
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#solution-matrix-free-solvers">
+     Solution: matrix - free solvers
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#example-main-loop-of-cg-algorithm">
+     Example: Main loop of CG algorithm
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#a-manufactured-example-problem">
+     A manufactured example problem
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#interface-to-feltor-from-python">
+       Interface to Feltor from python
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#create-some-default-input-parameters">
+       Create some default input parameters
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#some-basic-setup">
+       Some basic setup
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#our-first-solver-test-unpreconditioned-cg-on-a-nvidia-titan-xp">
+       Our first solver test: Unpreconditioned CG on a Nvidia Titan Xp
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#let-us-print-this-in-a-nicer-way">
+       Let us print this in a nicer way
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#preconditioners-in-a-matrix-free-solver">
+   Preconditioners in a matrix-free solver
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#how-do-other-krylov-solvers-fare-against-cg">
+   How do other Krylov-solvers fare against CG?
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#lgmres">
+     LGMRES
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#bicgstabl">
+     BICGSTABl
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#observations">
+     Observations
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#matrix-free-geometric-multigrid">
+   Matrix-free (geometric) multigrid
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#a-first-attempt-nested-iterations">
+     A first attempt: Nested iterations
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#fine-tuning-avoiding-scalar-products-on-coarse-grid">
+     Fine-tuning: Avoiding scalar products on coarse grid
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#matrix-free-full-multigrid">
+     Matrix-free Full multigrid
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#conclusions">
+   Conclusions
+  </a>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Matrix free solvers</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Matrix free solvers
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#elliptic-equation">
+     Elliptic equation
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#discretization">
+     Discretization
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#problem">
+     Problem
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#solution-matrix-free-solvers">
+     Solution: matrix - free solvers
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#example-main-loop-of-cg-algorithm">
+     Example: Main loop of CG algorithm
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#a-manufactured-example-problem">
+     A manufactured example problem
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#interface-to-feltor-from-python">
+       Interface to Feltor from python
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#create-some-default-input-parameters">
+       Create some default input parameters
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#some-basic-setup">
+       Some basic setup
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#our-first-solver-test-unpreconditioned-cg-on-a-nvidia-titan-xp">
+       Our first solver test: Unpreconditioned CG on a Nvidia Titan Xp
+      </a>
+     </li>
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#let-us-print-this-in-a-nicer-way">
+       Let us print this in a nicer way
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#preconditioners-in-a-matrix-free-solver">
+   Preconditioners in a matrix-free solver
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#how-do-other-krylov-solvers-fare-against-cg">
+   How do other Krylov-solvers fare against CG?
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#lgmres">
+     LGMRES
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#bicgstabl">
+     BICGSTABl
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#observations">
+     Observations
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#matrix-free-geometric-multigrid">
+   Matrix-free (geometric) multigrid
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#a-first-attempt-nested-iterations">
+     A first attempt: Nested iterations
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#fine-tuning-avoiding-scalar-products-on-coarse-grid">
+     Fine-tuning: Avoiding scalar products on coarse grid
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#matrix-free-full-multigrid">
+     Matrix-free Full multigrid
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#conclusions">
+   Conclusions
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <div class="tex2jax_ignore mathjax_ignore section" id="matrix-free-solvers">
+<h1>Matrix free solvers<a class="headerlink" href="#matrix-free-solvers" title="Permalink to this headline">#</a></h1>
+<div class="section" id="elliptic-equation">
+<h2>Elliptic equation<a class="headerlink" href="#elliptic-equation" title="Permalink to this headline">#</a></h2>
+<p>We here study the general two-dimensional elliptic equation</p>
+<div class="amsmath math notranslate nohighlight" id="equation-ee18e2f2-da21-4cdb-a1e1-47941afde039">
+<span class="eqno">(1)<a class="headerlink" href="#equation-ee18e2f2-da21-4cdb-a1e1-47941afde039" title="Permalink to this equation">#</a></span>\[\begin{align}
+-\nabla\cdot( \chi \nabla_\perp \phi) = \rho
+\end{align}\]</div>
+<p>which in a two-dimensional Cartesian grid reads</p>
+<div class="amsmath math notranslate nohighlight" id="equation-8a696b71-e600-4455-a182-2e22db2f3de5">
+<span class="eqno">(2)<a class="headerlink" href="#equation-8a696b71-e600-4455-a182-2e22db2f3de5" title="Permalink to this equation">#</a></span>\[\begin{align}
+    -\frac{\partial}{\partial x} \left( \chi(x,y) \frac{\partial}{\partial x} \phi(x,y)\right) - \frac{\partial}{\partial y} \left( \chi(x,y) \frac{\partial}{\partial y} \phi(x,y)\right) = \rho(x,y)
+    \label{eq:elliptic2d}
+\end{align}\]</div>
+<p>The task is to find a solution for <span class="math notranslate nohighlight">\(\phi\)</span> for given <span class="math notranslate nohighlight">\(\rho\)</span> and <span class="math notranslate nohighlight">\(\chi\)</span>.</p>
+</div>
+<div class="section" id="discretization">
+<h2>Discretization<a class="headerlink" href="#discretization" title="Permalink to this headline">#</a></h2>
+<p>We use discontinuous Galerkin (dG) methods to discretize</p>
+<div class="amsmath math notranslate nohighlight" id="equation-2b69a1c1-4f3a-4231-833c-8845f1f26ab8">
+<span class="eqno">(3)<a class="headerlink" href="#equation-2b69a1c1-4f3a-4231-833c-8845f1f26ab8" title="Permalink to this equation">#</a></span>\[\begin{align}
+\partial_x \rightarrow D_x
+\end{align}\]</div>
+<p>where <span class="math notranslate nohighlight">\(D_x\)</span> is a block-sparse matrix.
+We then have</p>
+<div class="amsmath math notranslate nohighlight" id="equation-9038000d-c9f4-4848-9069-b45f097c822d">
+<span class="eqno">(4)<a class="headerlink" href="#equation-9038000d-c9f4-4848-9069-b45f097c822d" title="Permalink to this equation">#</a></span>\[\begin{align}
+M \phi &amp;= \rho \label{eq:matrix} \\
+M &amp;= D_x^T \chi D_x + D_y^T \chi D_y + J
+\end{align}\]</div>
+<p>We here see that <span class="math notranslate nohighlight">\(M\)</span> is <strong>self-adjoint</strong>, which means that we can use a <strong>conjugate gradient (CG)</strong> solver.</p>
+</div>
+<div class="section" id="problem">
+<h2>Problem<a class="headerlink" href="#problem" title="Permalink to this headline">#</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Pseudo-code:</span>
+<span class="n">Grid</span><span class="w"> </span><span class="n">g</span><span class="p">;</span><span class="w"></span>
+<span class="n">Matrix</span><span class="w"> </span><span class="n">dx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_dx</span><span class="w"> </span><span class="p">(</span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">bcx</span><span class="p">),</span><span class="w"> </span><span class="n">dy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_dy</span><span class="p">(</span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">bcy</span><span class="p">),</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_jump</span><span class="p">();</span><span class="w"></span>
+<span class="n">DiagMatrix</span><span class="w"> </span><span class="n">diag_chi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_from_given_vector</span><span class="p">(</span><span class="n">chi</span><span class="p">);</span><span class="w"></span>
+<span class="c1">// assembly of M requires four matrix-matrix multiplications and 2 additions</span>
+<span class="n">Matrix</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dx</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">*</span><span class="n">diag_chi</span><span class="o">*</span><span class="n">dx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dy</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">*</span><span class="n">diag_chi</span><span class="o">*</span><span class="n">dy</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">j</span><span class="p">;</span><span class="w"></span>
+<span class="c1">// Now solve with CG</span>
+<span class="n">CG</span><span class="w"> </span><span class="n">cg</span><span class="p">;</span><span class="w"></span>
+<span class="n">Vector</span><span class="w"> </span><span class="n">phi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">discretize_phi</span><span class="p">(</span><span class="n">g</span><span class="p">),</span><span class="w"> </span><span class="n">rho</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">discretize_rho</span><span class="p">(</span><span class="n">g</span><span class="p">);</span><span class="w"></span>
+<span class="n">cg</span><span class="p">.</span><span class="n">solve</span><span class="p">(</span><span class="w"> </span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="n">phi</span><span class="p">,</span><span class="w"> </span><span class="n">rho</span><span class="p">,</span><span class="w"> </span><span class="n">eps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1e-8</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>In order to assemble <span class="math notranslate nohighlight">\(M\)</span> four <strong>matrix-matrix multiplcations</strong> need to be performed</p></li>
+<li><p>This <strong>takes longer than the entire CG solve</strong>, at least in our initial tests (admittedly 10 years ago)</p></li>
+</ul>
+</div>
+<div class="section" id="solution-matrix-free-solvers">
+<h2>Solution: matrix - free solvers<a class="headerlink" href="#solution-matrix-free-solvers" title="Permalink to this headline">#</a></h2>
+<div class="admonition-matrix-free admonition">
+<p class="admonition-title">Matrix-free</p>
+<p>A matrix-free solver is any solver for <span class="math notranslate nohighlight">\(M x = b\)</span> that does <strong>not require access</strong> to the elements of the matrix <span class="math notranslate nohighlight">\(M_{ij}\)</span></p>
+</div>
+<p>Matrix-free solvers are thus a subclass of available solvers</p>
+<p>Examples of solvers that are <strong>matrix-free</strong>:</p>
+<ul class="simple">
+<li><p>All Krylov-subspace solvers are matrix-free. E.g. conjugate gradient (CG), LGMRES, BICG, etc.</p></li>
+<li><p>Fixed point iterations</p></li>
+<li><p>Chebyshev iteration</p></li>
+</ul>
+<p>Examples of solvers that are <strong>not matrix-free</strong></p>
+<ul class="simple">
+<li><p>Direct solvers; need to access <span class="math notranslate nohighlight">\(M_{ij}\)</span> directly</p></li>
+<li><p>Jacobi iteration; because it needs to decompose <span class="math notranslate nohighlight">\(M = D + L + U\)</span></p></li>
+<li><p>Gauss-Seidel iteration; needs to decompose <span class="math notranslate nohighlight">\(M = L_* + U\)</span></p></li>
+</ul>
+</div>
+<div class="section" id="example-main-loop-of-cg-algorithm">
+<h2>Example: Main loop of CG algorithm<a class="headerlink" href="#example-main-loop-of-cg-algorithm" title="Permalink to this headline">#</a></h2>
+<p>To solve</p>
+<div class="amsmath math notranslate nohighlight" id="equation-0aa338cf-1b9a-44ab-a399-d50ede318317">
+<span class="eqno">(5)<a class="headerlink" href="#equation-0aa338cf-1b9a-44ab-a399-d50ede318317" title="Permalink to this equation">#</a></span>\[\begin{align}
+Mx = b
+\end{align}\]</div>
+<p>the main loop of CG reads <a class="reference external" href="https://en.wikipedia.org/wiki/Conjugate_gradient_method">https://en.wikipedia.org/wiki/Conjugate_gradient_method</a></p>
+<div class="amsmath math notranslate nohighlight" id="equation-f27182bb-c22e-4ef0-948f-7c8e6fdbbbca">
+<span class="eqno">(6)<a class="headerlink" href="#equation-f27182bb-c22e-4ef0-948f-7c8e6fdbbbca" title="Permalink to this equation">#</a></span>\[\begin{align}
+\alpha_k =&amp; \frac{r_k^T \cdot r_k}{p_k^T \cdot ( \color{red}{M \cdot p_k})} \\
+x_{k+1} = &amp; x_k + \alpha_k p_k \\
+r_{k+1} = &amp; r_k - \alpha_k \color{red}{M \cdot p_k} \\
+\beta_k = &amp; \frac{r_{k+1}^T \cdot r_{k+1}}{r_k^T \cdot r_k} \\
+p_{k+1} = &amp; r_{k+1} + \beta_k p_k
+\end{align}\]</div>
+<p>To implement you only need to implement the <strong>application of <span class="math notranslate nohighlight">\(M\)</span> to a vector</strong> rather than <span class="math notranslate nohighlight">\(M\)</span> itself</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Grid</span><span class="w"> </span><span class="n">g</span><span class="p">;</span><span class="w"></span>
+<span class="n">Matrix</span><span class="w"> </span><span class="n">dx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_dx</span><span class="w"> </span><span class="p">(</span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">bcx</span><span class="p">),</span><span class="w"> </span><span class="n">dy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_dy</span><span class="p">(</span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">bcy</span><span class="p">),</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_jump</span><span class="p">();</span><span class="w"></span>
+<span class="n">DiagMatrix</span><span class="w"> </span><span class="n">diag_chi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_from_given_vector</span><span class="p">(</span><span class="n">chi</span><span class="p">);</span><span class="w"></span>
+
+<span class="c1">// Implement the effet of matrix without ever assembling it</span>
+<span class="n">Vector</span><span class="w"> </span><span class="nf">matrix_vector_product_with_elliptic_matrix</span><span class="p">(</span><span class="w"> </span><span class="n">Vector</span><span class="w"> </span><span class="n">phi</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">Vector</span><span class="w"> </span><span class="n">dxP</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dx</span><span class="o">*</span><span class="n">phi</span><span class="p">,</span><span class="w"> </span><span class="n">dyP</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dy</span><span class="o">*</span><span class="n">phi</span><span class="p">,</span><span class="w"> </span><span class="n">JP</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">j</span><span class="o">*</span><span class="n">phi</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">Vector</span><span class="w"> </span><span class="n">tempX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">diag_chi</span><span class="o">*</span><span class="n">dxP</span><span class="p">,</span><span class="w"> </span><span class="n">tempY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">diag_chi</span><span class="o">*</span><span class="n">dyP</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">dxP</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dx</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">*</span><span class="n">tempX</span><span class="p">,</span><span class="w"> </span><span class="n">dy</span><span class="o">=</span><span class="w"> </span><span class="n">dy</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">*</span><span class="n">tempY</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">dxP</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dyP</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">JP</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="c1">// In main CG loop</span>
+<span class="n">Vector</span><span class="w"> </span><span class="n">Ap</span><span class="o">=</span><span class="w"> </span><span class="n">matrix_vector_product_with_elliptic_matrix</span><span class="p">(</span><span class="w"> </span><span class="n">p_k</span><span class="p">);</span><span class="w"></span>
+<span class="kt">double</span><span class="w"> </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">r_old</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">p</span><span class="o">*</span><span class="n">Ap</span><span class="p">;</span><span class="w"></span>
+<span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">alpha</span><span class="o">*</span><span class="n">p</span><span class="p">;</span><span class="w"></span>
+<span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">alpha</span><span class="o">*</span><span class="n">Ap</span><span class="p">;</span><span class="w"></span>
+<span class="n">r_new</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">r</span><span class="o">*</span><span class="n">r</span><span class="p">;</span><span class="w"></span>
+<span class="kt">double</span><span class="w"> </span><span class="n">beta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">r_new</span><span class="o">/</span><span class="n">r_old</span><span class="p">;</span><span class="w"></span>
+<span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">beta</span><span class="o">*</span><span class="n">p</span><span class="p">;</span><span class="w"></span>
+<span class="n">r_old</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">r_new</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="a-manufactured-example-problem">
+<h2>A manufactured example problem<a class="headerlink" href="#a-manufactured-example-problem" title="Permalink to this headline">#</a></h2>
+<p>We manufacture the solution</p>
+<div class="amsmath math notranslate nohighlight" id="equation-935c573c-f32a-43e8-b12b-e396af74f351">
+<span class="eqno">(7)<a class="headerlink" href="#equation-935c573c-f32a-43e8-b12b-e396af74f351" title="Permalink to this equation">#</a></span>\[\begin{align}
+\chi &amp;= 1 + A \sin (x)\sin(y) \\
+\rho &amp;= 2 \sin(x) \sin(y) (A\sin(x)\sin(y) +1)- A\sin^2(x)\cos^2(y) - A\cos^2(x)\sin^2(y) \\
+\phi &amp;= \sin(x)\sin(y)
+\end{align}\]</div>
+<p>for <span class="math notranslate nohighlight">\(A\in ]-1,1[\)</span> and solve on the domain <span class="math notranslate nohighlight">\([0,\pi]\times [0,2\pi]\)</span> for Dirichlet boundary conditions in <span class="math notranslate nohighlight">\(x\)</span> and periodic in <span class="math notranslate nohighlight">\(y\)</span>.
+The <strong>initital guess is zero</strong>.</p>
+<div class="section" id="interface-to-feltor-from-python">
+<h3>Interface to Feltor from python<a class="headerlink" href="#interface-to-feltor-from-python" title="Permalink to this headline">#</a></h3>
+<p>We have a C++ program “solvers.cpp” written using the FELTOR library.</p>
+<ul class="simple">
+<li><p>Takes json file as input</p></li>
+<li><p>Writes output as yaml</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">simplesimdb</span>  <span class="c1"># A leightweight data creator and database manager</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">yaml</span> <span class="c1"># for output files</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.float_format&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%.2e</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">x</span><span class="p">)</span>
+<span class="c1"># Type make solvers in the repository to have the executable available</span>
+<span class="n">database</span> <span class="o">=</span> <span class="n">simplesimdb</span><span class="o">.</span><span class="n">Manager</span><span class="p">(</span> <span class="n">executable</span><span class="o">=</span><span class="s1">&#39;./solvers&#39;</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">filetype</span> <span class="o">=</span> <span class="s1">&#39;yaml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="create-some-default-input-parameters">
+<h3>Create some default input parameters<a class="headerlink" href="#create-some-default-input-parameters" title="Permalink to this headline">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_solver</span><span class="p">()</span> <span class="p">:</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span> <span class="p">:</span> <span class="s2">&quot;CG&quot;</span><span class="p">,</span> <span class="c1"># CG, LGMRES, BICGSTABl, Multigrid</span>
+        <span class="s2">&quot;eps&quot;</span> <span class="p">:</span> <span class="mf">1e-6</span><span class="p">,</span>
+        <span class="s2">&quot;preconditioner&quot;</span> <span class="p">:{</span>
+            <span class="s2">&quot;type&quot;</span> <span class="p">:</span> <span class="s2">&quot;none&quot;</span> <span class="c1"># None or diagonal</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;max_iter&quot;</span> <span class="p">:</span> <span class="mi">50000</span><span class="p">,</span> <span class="c1"># maximum number of iterations</span>
+        <span class="c1"># for CG</span>
+        <span class="s2">&quot;check-every&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="c1"># errror check every .. iterations</span>
+        <span class="c1"># for LGMRES</span>
+        <span class="s2">&quot;inner_m&quot;</span> <span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="s2">&quot;outer_k&quot;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="c1"># for BICGSTABL</span>
+        <span class="s2">&quot;l_input&quot;</span> <span class="p">:</span> <span class="mi">3</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_inputfile</span> <span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Create an input file for the solvers FELTOR code&#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;grid&quot;</span> <span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;n&quot;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;Nx&quot;</span> <span class="p">:</span> <span class="mi">128</span><span class="p">,</span> 
+            <span class="s2">&quot;Ny&quot;</span> <span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;solver&quot;</span> <span class="p">:</span> <span class="n">create_solver</span><span class="p">(),</span>
+        <span class="s2">&quot;equations&quot;</span><span class="p">:</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;amp&quot;</span> <span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="c1"># The closer to 1 the more difficult!   </span>
+        <span class="p">},</span>
+        <span class="s2">&quot;elliptic&quot;</span> <span class="p">:</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;jfactor&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;direction&quot;</span> <span class="p">:</span> <span class="s2">&quot;forward&quot;</span> <span class="c1"># forward or centered</span>
+
+        <span class="p">}</span>    
+    <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="some-basic-setup">
+<h3>Some basic setup<a class="headerlink" href="#some-basic-setup" title="Permalink to this headline">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clean out all existing simulations</span>
+<span class="n">database</span><span class="o">.</span><span class="n">delete_all</span><span class="p">()</span>
+<span class="n">database</span><span class="o">.</span><span class="n">directory</span><span class="o">=</span><span class="s1">&#39;data&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_dataframe</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Make a pandas Dataframe of all simulations in the database</span>
+<span class="sd">    </span>
+<span class="sd">    Concatenates all inputs and outputs as serialized dicts</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">inputs</span>  <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">outputs</span> <span class="o">=</span><span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">database</span><span class="o">.</span><span class="n">table</span><span class="p">()</span> <span class="p">:</span>
+        <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span> <span class="n">database</span><span class="o">.</span><span class="n">outfile</span><span class="p">(</span> <span class="n">data</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">full_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">output</span><span class="p">)</span>
+    <span class="n">dfi</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">json_normalize</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>        
+    <span class="n">dfo</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">json_normalize</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dfi</span><span class="p">,</span> <span class="n">dfo</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span> <span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="our-first-solver-test-unpreconditioned-cg-on-a-nvidia-titan-xp">
+<h3>Our first solver test: Unpreconditioned CG on a Nvidia Titan Xp<a class="headerlink" href="#our-first-solver-test-unpreconditioned-cg-on-a-nvidia-titan-xp" title="Permalink to this headline">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create an inputfile</span>
+<span class="n">inputfile</span> <span class="o">=</span> <span class="n">create_inputfile</span><span class="p">()</span>
+
+<span class="c1"># Run a simulation</span>
+<span class="n">outputfile</span><span class="o">=</span><span class="n">database</span><span class="o">.</span><span class="n">create</span><span class="p">(</span> <span class="n">inputfile</span><span class="p">)</span>
+
+<span class="c1"># Read in the outputfile (yaml in this case)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outputfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">full_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># Print</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">inputfile</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running simulation 2c3fd2...d15a.yaml
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;grid&#39;: {&#39;n&#39;: 3, &#39;Nx&#39;: 128, &#39;Ny&#39;: 256}, &#39;solver&#39;: {&#39;type&#39;: &#39;CG&#39;, &#39;eps&#39;: 1e-06, &#39;preconditioner&#39;: {&#39;type&#39;: &#39;none&#39;}, &#39;max_iter&#39;: 50000, &#39;check-every&#39;: 1, &#39;inner_m&#39;: 30, &#39;outer_k&#39;: 3, &#39;l_input&#39;: 3}, &#39;equations&#39;: {&#39;amp&#39;: 0.9}, &#39;elliptic&#39;: {&#39;jfactor&#39;: 1, &#39;direction&#39;: &#39;forward&#39;}}
+{&#39;time&#39;: 1.43784, &#39;iter&#39;: 4133, &#39;error&#39;: 8.07962e-08, &#39;error_abs&#39;: 1.79484e-07}
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="let-us-print-this-in-a-nicer-way">
+<h3>Let us print this in a nicer way<a class="headerlink" href="#let-us-print-this-in-a-nicer-way" title="Permalink to this headline">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use Pandas to analyse the data in a nice way</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">make_dataframe</span><span class="p">()</span>  
+<span class="n">df</span><span class="p">[[</span><span class="s1">&#39;solver.type&#39;</span><span class="p">,</span><span class="s1">&#39;solver.preconditioner.type&#39;</span><span class="p">,</span><span class="s1">&#39;grid.n&#39;</span><span class="p">,</span><span class="s1">&#39;grid.Nx&#39;</span><span class="p">,</span><span class="s1">&#39;grid.Ny&#39;</span><span class="p">,</span><span class="s1">&#39;iter&#39;</span><span class="p">,</span><span class="s1">&#39;time&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>solver.type</th>
+      <th>solver.preconditioner.type</th>
+      <th>grid.n</th>
+      <th>grid.Nx</th>
+      <th>grid.Ny</th>
+      <th>iter</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>CG</td>
+      <td>none</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>4133</td>
+      <td>1.44e+00</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="preconditioners-in-a-matrix-free-solver">
+<h1>Preconditioners in a matrix-free solver<a class="headerlink" href="#preconditioners-in-a-matrix-free-solver" title="Permalink to this headline">#</a></h1>
+<p>Problem: since the matrix elements are un-known the preconditioner also needs to be <strong>matrix-free</strong></p>
+<p>We guess:</p>
+<div class="amsmath math notranslate nohighlight" id="equation-1a473e78-1479-41c3-b18c-d8d008d770b0">
+<span class="eqno">(8)<a class="headerlink" href="#equation-1a473e78-1479-41c3-b18c-d8d008d770b0" title="Permalink to this equation">#</a></span>\[\begin{align}
+M^{-1} \approx \frac{1}{\chi}
+\end{align}\]</div>
+<p>Diagonal preconditioner</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inputfile</span> <span class="o">=</span> <span class="n">create_inputfile</span><span class="p">()</span>
+<span class="n">inputfile</span><span class="p">[</span><span class="s2">&quot;solver&quot;</span><span class="p">][</span><span class="s2">&quot;preconditioner&quot;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;diagonal&#39;</span>
+
+<span class="n">database</span><span class="o">.</span><span class="n">create</span><span class="p">(</span> <span class="n">inputfile</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">make_dataframe</span><span class="p">()</span>  
+<span class="n">df</span><span class="p">[[</span><span class="s1">&#39;solver.type&#39;</span><span class="p">,</span><span class="s1">&#39;solver.preconditioner.type&#39;</span><span class="p">,</span><span class="s1">&#39;grid.n&#39;</span><span class="p">,</span><span class="s1">&#39;grid.Nx&#39;</span><span class="p">,</span><span class="s1">&#39;grid.Ny&#39;</span><span class="p">,</span><span class="s1">&#39;iter&#39;</span><span class="p">,</span><span class="s1">&#39;time&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running simulation 2e0250...195b.yaml
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>solver.type</th>
+      <th>solver.preconditioner.type</th>
+      <th>grid.n</th>
+      <th>grid.Nx</th>
+      <th>grid.Ny</th>
+      <th>iter</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>CG</td>
+      <td>none</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>4133</td>
+      <td>1.44e+00</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>CG</td>
+      <td>diagonal</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>2097</td>
+      <td>7.41e-01</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;solver.type&#39;</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/matrix-free_18_0.png" src="_images/matrix-free_18_0.png" />
+</div>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="how-do-other-krylov-solvers-fare-against-cg">
+<h1>How do other Krylov-solvers fare against CG?<a class="headerlink" href="#how-do-other-krylov-solvers-fare-against-cg" title="Permalink to this headline">#</a></h1>
+<div class="section" id="lgmres">
+<h2>LGMRES<a class="headerlink" href="#lgmres" title="Permalink to this headline">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inputfile</span> <span class="o">=</span> <span class="n">create_inputfile</span><span class="p">()</span>
+<span class="n">inputfile</span><span class="p">[</span><span class="s2">&quot;solver&quot;</span><span class="p">][</span><span class="s2">&quot;preconditioner&quot;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;diagonal&#39;</span>
+<span class="n">inputfile</span><span class="p">[</span><span class="s2">&quot;solver&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;LGMRES&quot;</span>
+
+<span class="n">database</span><span class="o">.</span><span class="n">create</span><span class="p">(</span> <span class="n">inputfile</span><span class="p">)</span>
+<span class="c1"># df = make_dataframe()</span>
+<span class="c1"># df[&quot;time_per_iter&quot;] = df[&quot;time&quot;]/df[&quot;iter&quot;]</span>
+<span class="c1"># dff = df[[&#39;solver.type&#39;,&#39;solver.preconditioner.type&#39;,&#39;grid.n&#39;,&#39;grid.Nx&#39;,&#39;grid.Ny&#39;,</span>
+<span class="c1">#           &#39;iter&#39;,&#39;time&#39;,&#39;time_per_iter&#39;,&#39;error&#39;]]</span>
+<span class="c1"># dff</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running simulation 125aff...937d.yaml
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;data/125afff62b1d961512876210dda326f55d55937d.yaml&#39;
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="bicgstabl">
+<h2>BICGSTABl<a class="headerlink" href="#bicgstabl" title="Permalink to this headline">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inputfile</span> <span class="o">=</span> <span class="n">create_inputfile</span><span class="p">()</span>
+<span class="n">inputfile</span><span class="p">[</span><span class="s2">&quot;solver&quot;</span><span class="p">][</span><span class="s2">&quot;preconditioner&quot;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;diagonal&#39;</span>
+<span class="n">inputfile</span><span class="p">[</span><span class="s2">&quot;solver&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;BICGSTABl&quot;</span>
+
+<span class="n">database</span><span class="o">.</span><span class="n">create</span><span class="p">(</span> <span class="n">inputfile</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">make_dataframe</span><span class="p">()</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;time_per_iter&#39;</span><span class="p">]</span> <span class="o">=</span>  <span class="n">df</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;iter&quot;</span><span class="p">]</span>
+<span class="n">dff</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;solver.type&#39;</span><span class="p">,</span><span class="s1">&#39;solver.preconditioner.type&#39;</span><span class="p">,</span><span class="s1">&#39;grid.n&#39;</span><span class="p">,</span><span class="s1">&#39;grid.Nx&#39;</span><span class="p">,</span><span class="s1">&#39;grid.Ny&#39;</span><span class="p">,</span><span class="s1">&#39;iter&#39;</span><span class="p">,</span><span class="s1">&#39;time&#39;</span><span class="p">,</span><span class="s1">&#39;time_per_iter&#39;</span><span class="p">]]</span>
+<span class="n">dff</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running simulation 22c9a0...3d3d.yaml
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>solver.type</th>
+      <th>solver.preconditioner.type</th>
+      <th>grid.n</th>
+      <th>grid.Nx</th>
+      <th>grid.Ny</th>
+      <th>iter</th>
+      <th>time</th>
+      <th>time_per_iter</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>LGMRES</td>
+      <td>diagonal</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>5229</td>
+      <td>7.92e+00</td>
+      <td>1.51e-03</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>CG</td>
+      <td>none</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>4133</td>
+      <td>1.44e+00</td>
+      <td>3.48e-04</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>BICGSTABl</td>
+      <td>diagonal</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>1374</td>
+      <td>9.38e-01</td>
+      <td>6.82e-04</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>CG</td>
+      <td>diagonal</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>2097</td>
+      <td>7.41e-01</td>
+      <td>3.53e-04</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;solver.type&#39;</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/matrix-free_24_0.png" src="_images/matrix-free_24_0.png" />
+</div>
+</div>
+</div>
+<div class="section" id="observations">
+<h2>Observations<a class="headerlink" href="#observations" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>LGMRES is almost a <strong>factor 10</strong> worse than CG <strong>for this problem</strong> (other problems may have different results)</p></li>
+<li><p>BICGSTABl fares almost as well as normal CG</p></li>
+</ul>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="matrix-free-geometric-multigrid">
+<h1>Matrix-free (geometric) multigrid<a class="headerlink" href="#matrix-free-geometric-multigrid" title="Permalink to this headline">#</a></h1>
+<p>Classical multigrid consists of three ingredients [<em>Briggs, W.L., Henson, V.E., and McCormick, S.F. (2000) A multigid tutorial</em>]</p>
+<ul class="simple">
+<li><p>A grid restriction/prolongation</p></li>
+<li><p>A (direct) solver on the coarsest grid</p></li>
+<li><p>A smoother on the other grids</p></li>
+</ul>
+<p>With matrix-free (dG) solvers:</p>
+<ul class="simple">
+<li><p>restriction/prolongation is straightforward</p></li>
+<li><p>A direct solver is <strong>inadmissable</strong></p></li>
+<li><p>Most smoothers (e.g. Gauss-Seidel) are <strong>not matrix-free</strong></p></li>
+</ul>
+<div class="section" id="a-first-attempt-nested-iterations">
+<h2>A first attempt: Nested iterations<a class="headerlink" href="#a-first-attempt-nested-iterations" title="Permalink to this headline">#</a></h2>
+<p>IDEA:</p>
+<ul class="simple">
+<li><p>project initial guess to coarsest grid</p></li>
+<li><p>solve with PCG up to accuracy</p></li>
+<li><p>interpolate solution to next fine grid</p></li>
+<li><p>solve with PCG (with interpolated solution as initial guess)</p></li>
+<li><p>…</p></li>
+</ul>
+<p>This employs ideas from “Full approximation scheme” and <strong>also works for nonlinear problems</strong></p>
+<p>[<em>Van Emden Henson “Multigrid methods for nonlinear problems: an overview”, Proc. SPIE 5016, Computational Imaging, (1 July 2003);</em>]</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_multigrid_inputfile</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;grid&quot;</span> <span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;n&quot;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;Nx&quot;</span> <span class="p">:</span> <span class="mi">128</span><span class="p">,</span> 
+            <span class="s2">&quot;Ny&quot;</span> <span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;solver&quot;</span> <span class="p">:</span> 
+        <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span> <span class="p">:</span> <span class="s2">&quot;Multigrid-FAS&quot;</span><span class="p">,</span> <span class="c1"># Full approximation scheme</span>
+            <span class="s2">&quot;num_stages&quot;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;solvers&quot;</span> <span class="p">:</span>
+            <span class="p">[</span>
+                <span class="n">create_solver</span><span class="p">(),</span> <span class="c1"># Solver on stage 0 (the fine grid)</span>
+                <span class="n">create_solver</span><span class="p">(),</span> <span class="c1"># Solver on stage 1 (the next grid)</span>
+                <span class="n">create_solver</span><span class="p">()</span>  <span class="c1"># Solver on stage 2 (the coarse grid)</span>
+            <span class="p">]</span>      
+        <span class="p">},</span>
+        <span class="s2">&quot;equations&quot;</span><span class="p">:</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;amp&quot;</span> <span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="c1"># The closer to 1 the more difficult   </span>
+        <span class="p">},</span>
+        <span class="s2">&quot;elliptic&quot;</span> <span class="p">:</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;jfactor&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;direction&quot;</span> <span class="p">:</span> <span class="s2">&quot;forward&quot;</span> <span class="c1"># forward or centered</span>
+
+        <span class="p">}</span>    
+    <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inputfile</span> <span class="o">=</span> <span class="n">create_multigrid_inputfile</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">):</span>
+    <span class="n">inputfile</span><span class="p">[</span><span class="s1">&#39;solver&#39;</span><span class="p">][</span><span class="s1">&#39;solvers&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;preconditioner&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;diagonal&#39;</span>
+<span class="n">inputfile</span><span class="p">[</span><span class="s1">&#39;solver&#39;</span><span class="p">][</span><span class="s1">&#39;preconditioner&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;diagonal&#39;</span><span class="p">}</span>
+
+<span class="n">database</span><span class="o">.</span><span class="n">create</span><span class="p">(</span> <span class="n">inputfile</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="s1">&#39;display&#39;</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">make_dataframe</span><span class="p">()</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;time_per_iter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;iter&quot;</span><span class="p">]</span>
+<span class="n">dff</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;solver.type&#39;</span><span class="p">,</span><span class="s1">&#39;solver.preconditioner.type&#39;</span><span class="p">,</span><span class="s1">&#39;grid.n&#39;</span><span class="p">,</span><span class="s1">&#39;grid.Nx&#39;</span><span class="p">,</span><span class="s1">&#39;grid.Ny&#39;</span><span class="p">,</span>
+          <span class="s1">&#39;iter&#39;</span><span class="p">,</span><span class="s1">&#39;time&#39;</span><span class="p">,</span><span class="s1">&#39;time_per_iter&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">]]</span>
+<span class="n">dff</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running simulation 217afd...fdd7.yaml
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>solver.type</th>
+      <th>solver.preconditioner.type</th>
+      <th>grid.n</th>
+      <th>grid.Nx</th>
+      <th>grid.Ny</th>
+      <th>iter</th>
+      <th>time</th>
+      <th>time_per_iter</th>
+      <th>error</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>LGMRES</td>
+      <td>diagonal</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>5229</td>
+      <td>7.92e+00</td>
+      <td>1.51e-03</td>
+      <td>7.28e-07</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>CG</td>
+      <td>none</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>4133</td>
+      <td>1.44e+00</td>
+      <td>3.48e-04</td>
+      <td>8.08e-08</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>BICGSTABl</td>
+      <td>diagonal</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>1374</td>
+      <td>9.38e-01</td>
+      <td>6.82e-04</td>
+      <td>1.05e-06</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>CG</td>
+      <td>diagonal</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>2097</td>
+      <td>7.41e-01</td>
+      <td>3.53e-04</td>
+      <td>8.23e-08</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Multigrid-FAS</td>
+      <td>diagonal</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>76</td>
+      <td>1.26e-01</td>
+      <td>1.66e-03</td>
+      <td>8.34e-08</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;solver.type&#39;</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mf">0.05</span><span class="p">,</span><span class="mi">10</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/matrix-free_29_0.png" src="_images/matrix-free_29_0.png" />
+</div>
+</div>
+</div>
+<div class="section" id="fine-tuning-avoiding-scalar-products-on-coarse-grid">
+<h2>Fine-tuning: Avoiding scalar products on coarse grid<a class="headerlink" href="#fine-tuning-avoiding-scalar-products-on-coarse-grid" title="Permalink to this headline">#</a></h2>
+<p>On a cluster the most time-consuming operation is the scalar product on the coarse grid.
+<strong>Avoid error check at every iteration</strong>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inputfile</span> <span class="o">=</span> <span class="n">create_multigrid_inputfile</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">):</span>
+    <span class="n">inputfile</span><span class="p">[</span><span class="s1">&#39;solver&#39;</span><span class="p">][</span><span class="s1">&#39;solvers&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;check-every&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span> <span class="c1"># only check error at every 10-th iteration </span>
+    <span class="k">if</span><span class="p">(</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span> <span class="p">)</span> <span class="p">:</span> 
+        <span class="n">inputfile</span><span class="p">[</span><span class="s1">&#39;solver&#39;</span><span class="p">][</span><span class="s1">&#39;solvers&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;check-every&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> 
+    <span class="n">inputfile</span><span class="p">[</span><span class="s1">&#39;solver&#39;</span><span class="p">][</span><span class="s1">&#39;solvers&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;preconditioner&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;diagonal&#39;</span>
+    <span class="n">inputfile</span><span class="p">[</span><span class="s1">&#39;solver&#39;</span><span class="p">][</span><span class="s1">&#39;preconditioner&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;diagonal&#39;</span><span class="p">}</span>
+<span class="n">database</span><span class="o">.</span><span class="n">recreate</span><span class="p">(</span> <span class="n">inputfile</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="s1">&#39;display&#39;</span><span class="p">)</span>
+<span class="c1"># database.delete( inputfile)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">make_dataframe</span><span class="p">()</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;time_per_iter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;iter&quot;</span><span class="p">]</span>
+<span class="n">dff</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;solver.type&#39;</span><span class="p">,</span><span class="s1">&#39;solver.preconditioner.type&#39;</span><span class="p">,</span><span class="s1">&#39;grid.n&#39;</span><span class="p">,</span><span class="s1">&#39;grid.Nx&#39;</span><span class="p">,</span><span class="s1">&#39;grid.Ny&#39;</span><span class="p">,</span>
+          <span class="s1">&#39;iter&#39;</span><span class="p">,</span><span class="s1">&#39;time&#39;</span><span class="p">,</span><span class="s1">&#39;time_per_iter&#39;</span><span class="p">,</span><span class="s1">&#39;error&#39;</span><span class="p">]]</span>
+<span class="n">dff</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running simulation 27f4bd...be14.yaml
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>solver.type</th>
+      <th>solver.preconditioner.type</th>
+      <th>grid.n</th>
+      <th>grid.Nx</th>
+      <th>grid.Ny</th>
+      <th>iter</th>
+      <th>time</th>
+      <th>time_per_iter</th>
+      <th>error</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>LGMRES</td>
+      <td>diagonal</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>5229</td>
+      <td>7.92e+00</td>
+      <td>1.51e-03</td>
+      <td>7.28e-07</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>CG</td>
+      <td>none</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>4133</td>
+      <td>1.44e+00</td>
+      <td>3.48e-04</td>
+      <td>8.08e-08</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>BICGSTABl</td>
+      <td>diagonal</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>1374</td>
+      <td>9.38e-01</td>
+      <td>6.82e-04</td>
+      <td>1.05e-06</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>CG</td>
+      <td>diagonal</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>2097</td>
+      <td>7.41e-01</td>
+      <td>3.53e-04</td>
+      <td>8.23e-08</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Multigrid-FAS</td>
+      <td>diagonal</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>76</td>
+      <td>1.26e-01</td>
+      <td>1.66e-03</td>
+      <td>8.34e-08</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Multigrid-FAS</td>
+      <td>diagonal</td>
+      <td>3</td>
+      <td>128</td>
+      <td>256</td>
+      <td>76</td>
+      <td>1.11e-01</td>
+      <td>1.46e-03</td>
+      <td>8.22e-08</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">dff</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;solver.type&#39;</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+<span class="c1"># ax.set_xticklabels([&quot;LGMRES&quot;,&quot;BICGSTABl&quot;,&quot;CG (no precond.)&quot;, &quot;CG (with precond.)&quot;</span>
+<span class="c1"># ,&quot;FAS (default)&quot;,  &quot;FAS (optimized)&quot;]) </span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span> <span class="s1">&#39;time to solution [s]&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mf">0.05</span><span class="p">,</span><span class="mi">10</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+<span class="c1"># plt.savefig( &#39;solvers.png&#39;, bbox_inches=&quot;tight&quot;)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/matrix-free_32_0.png" src="_images/matrix-free_32_0.png" />
+</div>
+</div>
+</div>
+<div class="section" id="matrix-free-full-multigrid">
+<h2>Matrix-free Full multigrid<a class="headerlink" href="#matrix-free-full-multigrid" title="Permalink to this headline">#</a></h2>
+<p>Matrix-free Full multigrid is possible using</p>
+<ul class="simple">
+<li><p>use Chebyshev iterations as smoother</p></li>
+<li><p>use CG on coarse grid as solver</p></li>
+</ul>
+<p>BUT</p>
+<ul class="simple">
+<li><p>no performance improvement over nested iterations (in our tests)</p></li>
+<li><p>sometimes does not converge at all</p></li>
+</ul>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="conclusions">
+<h1>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">#</a></h1>
+<ul class="simple">
+<li><p>Matrix-free solvers <strong>avoid assembly cost</strong> of matrix</p></li>
+<li><p>CG solver can have large speedup <strong>(up to 10x) over LGMRES</strong> for symmetric problems</p></li>
+<li><p><strong>Matrix-free multigrid possible</strong> and large speedup (another 10x) over non-multigrid</p></li>
+</ul>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Matthias Wiesenberger<br/>
+  
+      &copy; Copyright 2022.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>
