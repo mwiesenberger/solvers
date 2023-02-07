@@ -33,7 +33,7 @@ double sol(double x)  { return sin( x);}
 double sol(double x, double y)  { return sin( x)*sin(y);}
 double derX(double x, double y)  { return cos( x)*sin(y);}
 double derY(double x, double y)  { return sin( x)*cos(y);}
-double vari(double x, double y)  { return pol(x,y)*pol(x,y)*(derX(x,y)*derX(x,y) + derY(x,y)*derY(x,y));}
+double vari(double x, double y)  { return (derX(x,y)*derX(x,y) + derY(x,y)*derY(x,y));}
 
 
 std::function<void(const dg::DVec&, dg::DVec&)> create_solver(
@@ -116,8 +116,9 @@ int main( int argc, char* argv[])
     dg::DVec temp = x;
     //compute error
     const dg::DVec solution = dg::evaluate( sol, grid);
-    const dg::DVec derivati = dg::evaluate( derX, grid);
-    const dg::DVec variatio = dg::evaluate( vari, grid);
+    const dg::DVec derivatiX = dg::evaluate( derX, grid);
+    const dg::DVec derivatiY = dg::evaluate( derY, grid);
+    const dg::DVec variation = dg::evaluate( vari, grid);
     const double norm = dg::blas2::dot( w2d, solution);
     dg::DVec error( solution);
 
@@ -184,6 +185,43 @@ int main( int argc, char* argv[])
     double err = dg::blas2::dot( w2d, error);
     sout << "error: "<<sqrt(err/norm)<<"\n";
     sout << "error_abs: "<<sqrt(err)<<"\n";
+
+    // ADDITION: Check convergence of derivatives
+    dg::DMatrix dx[3], dy[3];
+    dx[0] = dg::create::dx( grid, dg::forward);
+    dx[1] = dg::create::dx( grid, dg::backward);
+    dx[2] = dg::create::dx( grid, dg::centered);
+    dy[0] = dg::create::dy( grid, dg::forward);
+    dy[1] = dg::create::dy( grid, dg::backward);
+    dy[2] = dg::create::dy( grid, dg::centered);
+    std::string suff[3] = {"fw","bw","cc"};
+    dg::DVec x_der(x), y_der(x);
+    for( unsigned u=0; u<3; u++)
+    {
+        // X - derivative
+        dg::blas2::symv( dx[u], x, x_der);
+        dg::blas1::axpby( 1.,x_der,-1., derivatiX, error);
+        double norm = dg::blas2::dot( w2d, derivatiX);
+        //compute the L2 norm of the error
+        err = dg::blas2::dot( w2d, error);
+        sout << "error_dx_"<<suff[u]<<": "<<sqrt(err/norm)<<"\n";
+
+        // Y - derivative
+        dg::blas2::symv( dy[u], x, y_der);
+        dg::blas1::axpby( 1.,y_der,-1., derivatiY, error);
+        norm = dg::blas2::dot( w2d, derivatiY);
+        //compute the L2 norm of the error
+        err = dg::blas2::dot( w2d, error);
+        sout << "error_dy_"<<suff[u]<<": "<<sqrt(err/norm)<<"\n";
+
+        // Variation
+        dg::blas1::pointwiseDot( 1., x_der, x_der, 1., y_der, y_der, 0., temp);
+        dg::blas1::axpby( 1.,temp,-1., variation, error);
+        norm = dg::blas2::dot( w2d, variation);
+        //compute the L2 norm of the error
+        err = dg::blas2::dot( w2d, error);
+        sout << "error_var_"<<suff[u]<<": "<<sqrt(err/norm)<<"\n";
+    }
 
     if( argc == 3)
     {
