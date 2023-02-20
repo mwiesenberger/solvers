@@ -32,9 +32,11 @@
 *.app
 
 *.swp
+*.json
 .ipynb_checkpoints
 _build
 blob/toefl
 data
+data-blob
 solvers
 
