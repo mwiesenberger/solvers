@@ -48,7 +48,7 @@ struct Explicit
     dg::Elliptic<Geometry, Matrix, Container> m_laplaceM;
     std::vector<dg::Elliptic<Geometry, Matrix, Container> > m_multi_pol;
     std::vector<dg::Helmholtz<Geometry,  Matrix, Container> > m_multi_gamma1;
-    std::array<Matrix,2> m_dphi;
+    std::array<Matrix,2> m_forward, m_backward, m_dphi;
     dg::MultiMatrix<Matrix,Container> m_inter, m_project;
     std::array<Matrix,2> m_fine_forward, m_fine_backward, m_fine_dphi;
     dg::Advection< Geometry, Matrix, Container> m_adv;
@@ -86,7 +86,12 @@ Explicit< Geometry, M, Container>::Explicit( const Geometry& grid, const Paramet
     }
     m_dphi = {dg::create::dx( grid, m_p.bcx, m_p.dphi_dir),
                   dg::create::dy( grid, m_p.bcy, m_p.dphi_dir )};
-    if( "div-upwind" == m_p.advection)
+    m_forward[0]  = dg::create::dx( grid, dg::inverse( m_p.bcx), dg::forward);
+    m_forward[1]  = dg::create::dy( grid, dg::inverse( m_p.bcy), dg::forward);
+    m_backward[0] = dg::create::dx( grid, dg::inverse( m_p.bcx), dg::backward);
+    m_backward[1] = dg::create::dy( grid, dg::inverse( m_p.bcy), dg::backward);
+    if( "div-upwind" == m_p.advection ||
+        "div-upwind-multiply" == m_p.advection)
     {
         Geometry fine_grid = grid;
         fine_grid.set( 2*grid.n(), grid.Nx(), grid.Ny());
@@ -96,6 +101,7 @@ Explicit< Geometry, M, Container>::Explicit( const Geometry& grid, const Paramet
 
         m_fine_dphi[0] = dg::create::dx( fine_grid, m_p.bcx, m_p.dphi_dir);
         m_fine_dphi[1] = dg::create::dy( fine_grid, m_p.bcy, m_p.dphi_dir);
+        // inverse bc because applied to n*v
         m_fine_forward[0] = dg::create::dx( fine_grid, dg::inverse( m_p.bcx), dg::forward);
         m_fine_forward[1] = dg::create::dy( fine_grid, dg::inverse( m_p.bcy), dg::forward);
         m_fine_backward[0] = dg::create::dx( fine_grid, dg::inverse( m_p.bcx), dg::backward);
@@ -190,8 +196,40 @@ void Explicit<G, M, Container>::operator()( double t,
             // Div ExB velocity
             dg::blas1::pointwiseDot( m_p.kappa, m_ype[u], m_dyphi[u], 1., yp[u]);
         }
+        // for some reason neither of the following work
+        // oscillations appear that crash the simulation
         else if ( "div-upwind" == m_p.advection)
         {
+            // only interpolate-project the product n*v
+            dg::blas1::copy( 0., yp[u]);
+            dg::blas2::symv( m_inter, m_ype[u], m_fine_n);
+            dg::blas2::symv( m_dphi[0], m_phi[u], m_dxphi[u]);
+            dg::blas2::symv( m_dphi[1], m_phi[u], m_dyphi[u]);
+            dg::blas2::symv( m_inter, m_dxphi[u], m_fine_dxphi);
+            dg::blas2::symv( m_inter, m_dyphi[u], m_fine_dyphi);
+            //dx ( nv_x)
+            dg::blas1::pointwiseDot( -1., m_fine_binv, m_fine_dyphi, 0., m_fine_v);
+            dg::blas2::symv( m_project, m_fine_v, m_temp1);
+            //v_x
+            dg::blas1::pointwiseDot( m_fine_n, m_fine_v, m_fine_temp[0]); //f_x
+            dg::blas2::symv( m_project, m_fine_temp[0], m_temp0);
+            dg::blas2::symv( m_forward[0], m_temp0, m_v[0]);
+            dg::blas2::symv( m_backward[0], m_temp0, m_v[1]);
+            dg::blas1::evaluate( yp[u], dg::minus_equals(), dg::Upwind(), m_temp1, m_v[1], m_v[0]);
+            //dy ( nv_y)
+            dg::blas1::pointwiseDot( +1., m_fine_binv, m_fine_dxphi, 0., m_fine_v);
+            dg::blas1::plus( m_fine_v, -tau[u]*m_p.kappa);
+            dg::blas2::symv( m_project, m_fine_v, m_temp1);
+            //v_y
+            dg::blas1::pointwiseDot( m_fine_n, m_fine_v, m_fine_temp[0]); //f_y
+            dg::blas2::symv( m_project, m_fine_temp[0], m_temp0);
+            dg::blas2::symv( m_forward[1], m_temp0, m_v[0]);
+            dg::blas2::symv( m_backward[1], m_temp0, m_v[1]);
+            dg::blas1::evaluate( yp[u], dg::minus_equals(), dg::Upwind(), m_temp1, m_v[1], m_v[0]);
+        }
+        else if ( "div-upwind-multiply" == m_p.advection)
+        {
+            // interpolate-project the entire divergence
             dg::blas2::symv( m_inter, m_ype[u], m_fine_n);
             dg::blas2::symv( m_inter, m_phi[u], m_fine_phi);
             dg::blas1::copy( 0., m_fine_yp);
