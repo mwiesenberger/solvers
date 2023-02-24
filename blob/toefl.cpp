@@ -121,7 +121,7 @@ int main( int argc, char* argv[])
     oss << std::put_time(std::localtime(&ttt), "%F %T %Z");
     for( int i=0; i<argc; i++) oss << " "<<argv[i];
     att["history"] = oss.str();
-    att["comment"] = "Find more info in feltor/src/toefl/toefl.tex";
+    att["comment"] = "Find more info in solvers/blobs.ipynb";
     att["source"] = "FELTOR";
     att["git-hash"] = GIT_HASH;
     att["git-branch"] = GIT_BRANCH;
