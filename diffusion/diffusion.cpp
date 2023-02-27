@@ -39,12 +39,12 @@ int main( int argc, char* argv[])
     values[0] = dg::evaluate( [](double x, double y){ return y*y;}, grid);
     values[1] = dg::evaluate( [](double x, double y){ return -x*y;}, grid);
     values[2] = dg::evaluate( [](double x, double y){ return x*x;}, grid);
-    dg::blas1::scal( values, -1);//scale with -1 to counteract elliptic sign
     bb.values() = values;
     elliptic.set_chi( bb);
     // now make a matrix functional out of it
     double eps_rel = js["matrix-function"]["eps-rel"].asDouble();
-    dg::mat::MatrixFunction<dg::DVec> rhs( elliptic, elliptic.weights(), eps_rel, 1, 500);
+    // scale with -1 to counteract elliptic sign
+    dg::mat::MatrixFunction<dg::DVec> rhs( elliptic, elliptic.weights(), eps_rel, 1, 500, [](double x){return -x;});
 
     // init vector
 
