@@ -44,7 +44,7 @@ int main( int argc, char* argv[])
     // now make a matrix functional out of it
     double eps_rel = js["matrix-function"]["eps-rel"].asDouble();
     // scale with -1 to counteract elliptic sign
-    dg::mat::MatrixFunction<dg::DVec> rhs( elliptic, elliptic.weights(), eps_rel, 1, 500, [](double x){return -x;});
+    dg::mat::MatrixFunction<dg::DVec> rhs( elliptic, elliptic.weights(), eps_rel, 1, 5000, [](double x){return -x;});
 
     // init vector
 
